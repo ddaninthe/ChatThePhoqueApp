@@ -1,18 +1,43 @@
 package com.example.chatthephoqueapp;
 
-public class Contact {
-    private final String name, phoneNumber;
+import android.support.annotation.Nullable;
 
-    Contact(String name, String phoneNumber) {
+public class Contact {
+    private final String key;
+    private final String id, name, phoneNumber;
+
+    Contact(String id, String name, String phoneNumber) {
+        this.id = id;
         this.name = name;
-        this.phoneNumber = phoneNumber;
+        // Remove spaces
+        this.phoneNumber = phoneNumber.replaceAll("\\s", "");
+        key = this.phoneNumber.substring(this.phoneNumber.length() > 9 ? this.phoneNumber.length() - 9 : 0);
     }
 
     public String getName() {
         return name;
     }
 
-    public String getPhoneNumber() {
+    String getPhoneNumber() {
         return phoneNumber;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (!(obj instanceof Contact)) {
+            return false;
+        } else {
+            return key.equals(((Contact) obj).key);
+        }
+    }
+
+
 }

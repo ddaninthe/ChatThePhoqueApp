@@ -6,6 +6,11 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_settings">Settings</string>
 
+    <string name="alert_permission_needed_title">Permission needed</string>
+    <string name="alert_permission_needed_message">The $1%s is needed in order for the app to work</string>
+    <string name="alert_permission_denied_title">Permission not granted</string>
+    <string name="alert_permission_denied_message">The app will close because of missing permissions to work</string>
+
     <!-- Strings related to Settings -->
 
     <!-- Setting for Messages -->
