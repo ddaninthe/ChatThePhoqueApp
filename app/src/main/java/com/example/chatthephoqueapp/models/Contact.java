@@ -1,21 +1,10 @@
 package com.example.chatthephoqueapp.models;
 
-import android.content.ContentResolver;
-import android.content.Context;
-import android.database.Cursor;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 
 import com.google.firebase.database.Exclude;
 
 public class Contact {
-    @Exclude
-    private static final String[] PROJECTION = {
-            ContactsContract.CommonDataKinds.Phone.NUMBER
-    };
-    @Exclude
-    private final static String SELECTION = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?";
-
     private String key;
     private int id;
 
@@ -73,24 +62,8 @@ public class Contact {
         }
     }
 
-    public static Contact fromIdAndName(Context context, int id, String name) {
-        Contact contact = new Contact(id, name);
-
-        ContentResolver cr = context.getContentResolver();
-        Cursor cursor = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                PROJECTION, SELECTION, new String[] { Integer.toString(id) }, null);
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                String phoneNumber = cursor.getString(0);
-                contact.setPhoneNumber(phoneNumber);
-            }
-
-            cursor.close();
-        } else {
-            throw new IllegalArgumentException("No contact matching for this id");
-        }
-
-        return contact;
+    public static String fromPhoneToKey(String phoneNumber)  {
+        String trim = phoneNumber.replaceAll("\\s", "");
+        return trim.substring(trim.length() - 9);
     }
 }

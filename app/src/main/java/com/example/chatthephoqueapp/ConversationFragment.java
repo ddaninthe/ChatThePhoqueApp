@@ -1,6 +1,7 @@
 package com.example.chatthephoqueapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -12,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.chatthephoqueapp.models.Conversation;
 import com.example.chatthephoqueapp.models.ObjectDb;
@@ -58,7 +58,10 @@ public class ConversationFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String userKey = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(ObjectDb.PREF_USER_PHONE, MainActivity.USER_KEY);
+        String userKey = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(ObjectDb.PREF_USER_PHONE, null);
+        if (userKey == null) {
+            throw new IllegalArgumentException("User phone has not been set");
+        }
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userKey);
         mConversations = new ArrayList<>();
@@ -121,8 +124,9 @@ public class ConversationFragment extends Fragment {
             mListener = new OnListFragmentInteractionListener() {
                 @Override
                 public void onListFragmentInteraction(Conversation conversation) {
-                    // TODO: Show conversation
-                    Toast.makeText(context, "TODO: Show Conversation", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getContext(), MessageActivity.class);
+                    intent.putExtra(MessageActivity.EXTRA_CONVERSATION_ID, conversation.getKey());
+                    startActivity(intent);
                 }
             };
         }
@@ -151,7 +155,6 @@ public class ConversationFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onListFragmentInteraction(Conversation conversation);
     }
 

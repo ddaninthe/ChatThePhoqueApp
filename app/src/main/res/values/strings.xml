@@ -11,8 +11,17 @@
     <string name="alert_permission_denied_title">Permission not granted</string>
     <string name="alert_permission_denied_message">The app will close because of missing permissions to work</string>
 
+    <string name="alert_phone_needed_title">Phone number needed</string>
+    <string name="alert_phone_needed_message">The app need your phone number in order to receive messages, please provide it.</string>
+    <string name="retry">Retry</string>
+
+    <!-- Contact Fragment -->
     <string name="menu_contact_send_message">Send a message</string>
     <string name="menu_contact_show">Show contact</string>
+
+    <!-- UserPhoneInputActivity -->
+    <string name="phone_input_label">Please give your phone number in order for the app to work</string>
+    <string name="phone_bad_number">Bad phone number</string>
 
     <!-- Strings related to Settings -->
 

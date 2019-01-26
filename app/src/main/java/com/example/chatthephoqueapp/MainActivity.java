@@ -4,7 +4,9 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -20,11 +22,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.chatthephoqueapp.models.ObjectDb;
+
 public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 14;
-
-    // TODO : remove this constant
-    public static final String USER_KEY = "123456789";
+    private static final int REQUEST_PHONE_INPUT = 123;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -48,18 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        TabLayout tabLayout = findViewById(R.id.tabs);
-
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
         // Check permissions
         if (ContextCompat.checkSelfPermission(this,
@@ -91,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
                         new String[]{Manifest.permission.READ_CONTACTS},
                         PERMISSIONS_REQUEST_READ_CONTACTS);
             }
+        } else {
+            checkPhoneNeeded();
         }
 
     }
@@ -103,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
+                    checkPhoneNeeded();
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle(R.string.alert_permission_denied_title);
@@ -125,6 +118,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_PHONE_INPUT) {
+            if (resultCode != RESULT_OK) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.alert_phone_needed_title);
+                builder.setMessage(R.string.alert_phone_needed_message);
+                builder.setPositiveButton(R.string.retry, null);
+                AlertDialog dialog = builder.create();
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        startActivityForResult(new Intent(MainActivity.this, UserPhoneInputActivity.class),
+                                REQUEST_PHONE_INPUT);
+                    }
+                });
+                dialog.show();
+            }
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -138,13 +152,43 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void checkPhoneNeeded() {
+        String userKey = PreferenceManager.getDefaultSharedPreferences(this).getString(ObjectDb.PREF_USER_PHONE, null);
+
+        if (userKey == null) {
+            Intent intent = new Intent(this, UserPhoneInputActivity.class);
+            startActivityForResult(intent, REQUEST_PHONE_INPUT);
+        } else {
+            loadFragment();
+        }
+    }
+
+    /**
+     * Loads the {@link ContactFragment} and {@link ConversationFragment} fragments.
+     *
+     * Fragments are loaded only if permissions are granted and user provided his phone number.
+     */
+    private void loadFragment() {
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the activity.
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        TabLayout tabLayout = findViewById(R.id.tabs);
+
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
     }
 
     /**
