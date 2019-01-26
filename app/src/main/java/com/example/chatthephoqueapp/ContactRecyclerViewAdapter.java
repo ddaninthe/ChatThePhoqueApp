@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.chatthephoqueapp.ContactFragment.OnListFragmentInteractionListener;
+import com.example.chatthephoqueapp.models.Contact;
 
 import java.util.List;
 

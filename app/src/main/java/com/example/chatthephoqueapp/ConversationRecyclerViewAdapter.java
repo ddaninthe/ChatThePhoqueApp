@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.chatthephoqueapp.ConversationFragment.OnListFragmentInteractionListener;
+import com.example.chatthephoqueapp.models.Conversation;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
     private final List<Conversation> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public ConversationRecyclerViewAdapter(List<Conversation> items, OnListFragmentInteractionListener listener) {
+    ConversationRecyclerViewAdapter(List<Conversation> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -38,9 +39,9 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         Conversation conversation = mValues.get(position);
         holder.mItem = conversation;
-        holder.mContact.setText(conversation.getContact());
-        holder.mHour.setText(conversation.getLastHour());
-        holder.mLastMessage.setText(conversation.getLastMessage());
+        holder.mContact.setText(conversation.getContact().getName());
+        holder.mHour.setText(conversation.getLastTime());
+        holder.mLastMessage.setText(conversation.getLastMessage().getContent());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,13 +61,13 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mContact;
-        public final TextView mHour;
-        public final TextView mLastMessage;
-        public Conversation mItem;
+        private final View mView;
+        private final TextView mContact;
+        private final TextView mHour;
+        private final TextView mLastMessage;
+        private Conversation mItem;
 
-        public ViewHolder(View view) {
+        private ViewHolder(View view) {
             super(view);
             mView = view;
             mContact = view.findViewById(R.id.textContactName);
@@ -74,6 +75,7 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
             mLastMessage = view.findViewById(R.id.textLastMessage);
         }
 
+        @NonNull
         @Override
         public String toString() {
             return super.toString() + " '" + mLastMessage.getText() + "'";

@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.chatthephoqueapp.models.Contact;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -73,18 +75,17 @@ public class ContactFragment extends Fragment {
                 String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
                 String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
-                // Avoid duplicates
                 if (cur.getInt(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
                     Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                             null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
                             new String[]{id}, null);
                     if (pCur != null) {
                         while (pCur.moveToNext()) {
-                            String phoneNo = pCur.getString(pCur.getColumnIndex(
-                                    ContactsContract.CommonDataKinds.Phone.NUMBER));
-                            contact = new Contact(id, name, phoneNo);
+                            String phoneNo = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            contact = new Contact(Integer.parseInt(id), name);
+                            contact.setPhoneNumber(phoneNo);
 
-
+                            // Avoid duplicates
                             if (!keys.contains(contact.getKey())) {
                                 mContacts.add(contact);
                                 keys.add(contact.getKey());

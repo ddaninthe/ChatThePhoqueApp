@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "382785754866",
+    "firebase_url": "https://chatthephoqueapp.firebaseio.com",
+    "project_id": "chatthephoqueapp",
+    "storage_bucket": "chatthephoqueapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:382785754866:android:c41ea0ef62b30789",
+        "android_client_info": {
+          "package_name": "com.example.chatthephoqueapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "382785754866-8ftuu91ilb2t7h4t58rcpiifvnb54o5r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chatthephoqueapp",
+            "certificate_hash": "9bed22c7945ef0357cde02cf90b8040c2e7da565"
+          }
+        },
+        {
+          "client_id": "382785754866-92t5om7qvq6kph7bf8017ru9e931smd6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEFpS6z7eoUr3fg-EXeAii3utnUfYOeq0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "382785754866-92t5om7qvq6kph7bf8017ru9e931smd6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

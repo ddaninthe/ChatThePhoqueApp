@@ -23,6 +23,9 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 14;
 
+    // TODO : remove this constant
+    public static final String USER_KEY = "123456789";
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
