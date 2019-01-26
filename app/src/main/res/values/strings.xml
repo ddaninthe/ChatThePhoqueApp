@@ -11,6 +11,9 @@
     <string name="alert_permission_denied_title">Permission not granted</string>
     <string name="alert_permission_denied_message">The app will close because of missing permissions to work</string>
 
+    <string name="menu_contact_send_message">Send a message</string>
+    <string name="menu_contact_show">Show contact</string>
+
     <!-- Strings related to Settings -->
 
     <!-- Setting for Messages -->

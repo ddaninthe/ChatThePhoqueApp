@@ -22,7 +22,7 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
     private final List<Contact> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public ContactRecyclerViewAdapter(List<Contact> items, OnListFragmentInteractionListener listener) {
+    ContactRecyclerViewAdapter(List<Contact> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -48,7 +48,7 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onListFragmentInteraction(v, holder.mItem);
                 }
             }
         });
@@ -60,18 +60,19 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mContactName;
-        public final TextView mContactPhone;
-        public Contact mItem;
+        private final View mView;
+        private final TextView mContactName;
+        private final TextView mContactPhone;
+        private Contact mItem;
 
-        public ViewHolder(View view) {
+        private ViewHolder(View view) {
             super(view);
             mView = view;
             mContactName = view.findViewById(R.id.textContactName);
             mContactPhone = view.findViewById(R.id.textContactPhone);
         }
 
+        @NonNull
         @Override
         public String toString() {
             return super.toString() + " '" + mContactName.getText() + "'";

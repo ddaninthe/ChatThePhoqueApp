@@ -2,18 +2,21 @@ package com.example.chatthephoqueapp;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.chatthephoqueapp.models.Contact;
 
@@ -28,14 +31,12 @@ import java.util.Set;
  * interface.
  */
 public class ContactFragment extends Fragment {
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
 
     // An adapter that binds the result Cursor to the ListView
     private ArrayList<Contact> mContacts;
     private OnListFragmentInteractionListener mListener;
+    private RecyclerView mRecyclerView;
+    private int mContactIDClicked;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -44,22 +45,13 @@ public class ContactFragment extends Fragment {
     public ContactFragment() {
     }
 
-    // TODO: Customize parameter initialization
     public static ContactFragment newInstance() {
-        ContactFragment fragment = new ContactFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, 1);
-        fragment.setArguments(args);
-        return fragment;
+        return new ContactFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
 
         // Get contacts
         mContacts = new ArrayList<>();
@@ -103,21 +95,42 @@ public class ContactFragment extends Fragment {
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.contact_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_contact_send_message:
+                // Todo send message
+
+                return true;
+            case R.id.menu_contact_show:
+
+                Intent intent = new Intent(Intent.ACTION_VIEW,
+                        Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,
+                                Integer.toString(mContactIDClicked)));
+                startActivity(intent);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            // TODO: Set data here
-            recyclerView.setAdapter(new ContactRecyclerViewAdapter(mContacts, mListener));
+            mRecyclerView = (RecyclerView) view;
+            registerForContextMenu(mRecyclerView);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            mRecyclerView.setAdapter(new ContactRecyclerViewAdapter(mContacts, mListener));
         }
         return view;
     }
@@ -130,8 +143,9 @@ public class ContactFragment extends Fragment {
         } else {
             mListener = new OnListFragmentInteractionListener() {
                 @Override
-                public void onListFragmentInteraction(Contact contact) {
-                    Toast.makeText(context, "TODO: Show Contact, id: " + contact.getId(), Toast.LENGTH_SHORT).show();
+                public void onListFragmentInteraction(View view, Contact contact) {
+                    mRecyclerView.showContextMenuForChild(view);
+                    mContactIDClicked = contact.getId();
                 }
             };
         }
@@ -154,6 +168,6 @@ public class ContactFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Contact contact);
+        void onListFragmentInteraction(View view, Contact contact);
     }
 }
