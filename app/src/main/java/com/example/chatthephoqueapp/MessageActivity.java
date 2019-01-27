@@ -13,8 +13,8 @@ public class MessageActivity extends AppCompatActivity {
 
         String conversationId = getIntent().getStringExtra(EXTRA_CONVERSATION_ID);
 
-
-
-
+        if (conversationId == null) {
+            finish();
+        }
     }
 }

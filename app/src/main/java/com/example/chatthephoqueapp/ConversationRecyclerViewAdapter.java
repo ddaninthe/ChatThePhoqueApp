@@ -46,11 +46,20 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != mListener) {
+                if (mListener != null) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onListFragmentInteraction(holder.mItem, ConversationFragment.EVENT_ON_CLICK);
                 }
+            }
+        });
+        holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mListener != null) {
+                    mListener.onListFragmentInteraction(holder.mItem, ConversationFragment.EVENT_ON_LONG_CLICK);
+                }
+                return true;
             }
         });
     }

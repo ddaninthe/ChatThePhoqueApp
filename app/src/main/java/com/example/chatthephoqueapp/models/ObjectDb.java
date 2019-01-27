@@ -10,4 +10,10 @@ public interface ObjectDb {
      * @param database  a {@link DatabaseReference} at the node of the current UserKey
      */
     void addToFirebase(DatabaseReference database);
+
+    /**
+     * Deletes the ObjectDb from Firebase
+     * @param databaseReference  a {@link DatabaseReference} at the node of the current UserKey
+     */
+    void deleteFromFirebase(DatabaseReference databaseReference);
 }

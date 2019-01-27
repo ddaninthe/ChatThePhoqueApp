@@ -1,18 +1,22 @@
 package com.example.chatthephoqueapp;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.chatthephoqueapp.models.Conversation;
 import com.example.chatthephoqueapp.models.ObjectDb;
@@ -35,6 +39,9 @@ import java.util.List;
  * interface.
  */
 public class ConversationFragment extends Fragment {
+    static final int EVENT_ON_LONG_CLICK = 18;
+    static final int EVENT_ON_CLICK = 12;
+
     private static final String TAG = ConversationFragment.class.getName();
 
     private OnListFragmentInteractionListener mListener;
@@ -42,6 +49,8 @@ public class ConversationFragment extends Fragment {
     private ValueEventListener mValueEventListener;
     private List<Conversation> mConversations;
     private ConversationRecyclerViewAdapter mAdapter;
+    private ProgressBar mProgressBar;
+    private TextView mTextView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -88,6 +97,12 @@ public class ConversationFragment extends Fragment {
                 // Sort the list by most recent conversation
                 orderConversationByLastMessage(mConversations);
 
+                if (mProgressBar != null) {
+                    mProgressBar.setVisibility(View.GONE);
+                }
+
+                mTextView.setVisibility(mConversations.size() > 0 ? View.GONE : View.VISIBLE);
+
                 mAdapter.notifyDataSetChanged();
             }
 
@@ -105,13 +120,14 @@ public class ConversationFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_conversation_list, container, false);
 
+        mProgressBar = view.findViewById(R.id.progressConversation);
+        mTextView = view.findViewById(R.id.textNoConversation);
+
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            RecyclerView recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-            mAdapter = new ConversationRecyclerViewAdapter(mConversations, mListener);
-            recyclerView.setAdapter(mAdapter);
-        }
+        RecyclerView recyclerView = view.findViewById(R.id.conversationList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mAdapter = new ConversationRecyclerViewAdapter(mConversations, mListener);
+        recyclerView.setAdapter(mAdapter);
         return view;
     }
 
@@ -123,10 +139,30 @@ public class ConversationFragment extends Fragment {
         } else {
             mListener = new OnListFragmentInteractionListener() {
                 @Override
-                public void onListFragmentInteraction(Conversation conversation) {
-                    Intent intent = new Intent(getContext(), MessageActivity.class);
-                    intent.putExtra(MessageActivity.EXTRA_CONVERSATION_ID, conversation.getKey());
-                    startActivity(intent);
+                public void onListFragmentInteraction(final Conversation conversation, int eventType) {
+                    if (eventType == EVENT_ON_CLICK) {
+                        Intent intent = new Intent(getContext(), MessageActivity.class);
+                        intent.putExtra(MessageActivity.EXTRA_CONVERSATION_ID, conversation.getKey());
+                        startActivity(intent);
+                    } else if (eventType == EVENT_ON_LONG_CLICK) {
+                        AlertDialog dialog = new AlertDialog.Builder(context)
+                                .setTitle(R.string.alert_delete_conversation_title)
+                                .setMessage(R.string.alert_delete_conversation_message)
+                                .setNegativeButton(android.R.string.no, null)
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String userKey = PreferenceManager.getDefaultSharedPreferences(context).getString(ObjectDb.PREF_USER_PHONE, null);
+                                        if (userKey != null) {
+                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference(userKey);
+                                            conversation.deleteFromFirebase(ref);
+                                        }
+                                        mConversations.remove(conversation);
+                                    }
+                                })
+                                .create();
+                        dialog.show();
+                    }
                 }
             };
         }
@@ -155,7 +191,7 @@ public class ConversationFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Conversation conversation);
+        void onListFragmentInteraction(Conversation conversation, int eventType);
     }
 
     @Nullable

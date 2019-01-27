@@ -15,6 +15,11 @@
     <string name="alert_phone_needed_message">The app need your phone number in order to receive messages, please provide it.</string>
     <string name="retry">Retry</string>
 
+    <!-- Conversation Fragment -->
+    <string name="no_conversation">No conversation yet.</string>
+    <string name="alert_delete_conversation_title">Delete Conversation</string>
+    <string name="alert_delete_conversation_message">Do you really want to delete this conversation ?</string>
+
     <!-- Contact Fragment -->
     <string name="menu_contact_send_message">Send a message</string>
     <string name="menu_contact_show">Show contact</string>
