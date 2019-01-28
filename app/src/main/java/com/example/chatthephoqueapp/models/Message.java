@@ -21,6 +21,8 @@ public class Message implements ObjectDb {
 
     @Exclude
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM HH:mm", Locale.FRENCH);
+    @Exclude
+    private static final DateFormat HOUR_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
 
     // Firebase Need
     @SuppressWarnings("unused")
@@ -33,10 +35,22 @@ public class Message implements ObjectDb {
         this.conversationKey = conversationKey;
     }
 
+    /**
+     * Display the Date of the message as dd/MM HH:mm.
+     * @return  a String representing a Date
+     */
     @Exclude
     public String getTime() {
-        // TODO: display hours if today
         return DATE_FORMAT.format(date);
+    }
+
+    /**
+     * Display the Date of the message as HH:mm
+     * @return  a String representing a Date
+     */
+    @Exclude
+    public String getHour() {
+        return HOUR_FORMAT.format(date);
     }
 
     public Date getDate() {

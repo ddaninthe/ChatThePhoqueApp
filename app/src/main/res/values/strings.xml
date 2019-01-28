@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">ChatThePhoqueApp</string>
 
+    <!-- MainActivity -->
     <string name="tab_conversations">Conversations</string>
     <string name="tab_contacts">Contacts</string>
     <string name="action_settings">Settings</string>
@@ -28,8 +29,10 @@
     <string name="phone_input_label">Please give your phone number in order for the app to work</string>
     <string name="phone_bad_number">Bad phone number</string>
 
-    <!-- Strings related to Settings -->
+    <!-- MessageActivity -->
+    <string name="img_btn_description">Right arrow to send a message</string>
 
+    <!-- Strings related to Settings -->
     <!-- Setting for Messages -->
     <string name="pref_header_messages">Messages</string>
 

@@ -33,7 +33,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * A fragment representing a list of Items.
+ * A fragment representing a list of Conversations.
  * <p/>
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
@@ -143,6 +143,7 @@ public class ConversationFragment extends Fragment {
                     if (eventType == EVENT_ON_CLICK) {
                         Intent intent = new Intent(getContext(), MessageActivity.class);
                         intent.putExtra(MessageActivity.EXTRA_CONVERSATION_ID, conversation.getKey());
+                        intent.putExtra(MessageActivity.EXTRA_CONTACT_ID, conversation.getContact().getId());
                         startActivity(intent);
                     } else if (eventType == EVENT_ON_LONG_CLICK) {
                         AlertDialog dialog = new AlertDialog.Builder(context)

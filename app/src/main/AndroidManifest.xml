@@ -13,8 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UserPhoneInputActivity"></activity>
-        <activity android:name=".MessageActivity" />
+        <activity android:name=".UserPhoneInputActivity"/>
+        <activity android:name=".MessageActivity"
+            android:windowSoftInputMode="stateAlwaysVisible"/>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
