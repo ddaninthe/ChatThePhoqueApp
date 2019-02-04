@@ -4,12 +4,16 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 public class MessageActivity extends AppCompatActivity {
     static final String EXTRA_CONVERSATION_ID = "intent.extra.CONVERSATION_ID";
     static final String EXTRA_CONTACT_ID = "intent.extra.CONTACT_ID";
+
+    private final static String FRAGMENT_TAG = "message_fragment";
 
     private static final String[] PROJECTION = {
             ContactsContract.Contacts.DISPLAY_NAME
@@ -21,6 +25,10 @@ public class MessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
+
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
         String conversationId = intent.getStringExtra(EXTRA_CONVERSATION_ID);
@@ -41,5 +49,22 @@ public class MessageActivity extends AppCompatActivity {
             }
             cur.close();
         }
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_holder,
+                    MessageFragment.newInstance(conversationId), FRAGMENT_TAG)
+                    .commit();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
