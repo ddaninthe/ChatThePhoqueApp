@@ -1,8 +1,12 @@
 package com.example.chatthephoqueapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -51,6 +55,30 @@ public class ConversationFragment extends Fragment {
     private ConversationRecyclerViewAdapter mAdapter;
     private ProgressBar mProgressBar;
     private TextView mTextView;
+    private Context mContext;
+
+    private BroadcastReceiver mInternetReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (ConnectivityManager.CONNECTIVITY_ACTION.equals(action)) {
+                ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+
+                if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
+                    // Connected
+                    System.out.println("Event Connected: size: " +mConversations.size());
+                    if (mConversations.size() == 0) {
+                        mTextView.setVisibility(View.GONE);
+                    }
+                } else if(intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false)) {
+                    // Disconnected
+                    System.out.println("Event Disconnected");
+                }
+
+            }
+        }
+    };
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -67,7 +95,9 @@ public class ConversationFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String userKey = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(ObjectDb.PREF_USER_PHONE, null);
+        mContext = getContext();
+
+        String userKey = PreferenceManager.getDefaultSharedPreferences(mContext).getString(ObjectDb.PREF_USER_PHONE, null);
         if (userKey == null) {
             throw new IllegalArgumentException("User phone has not been set");
         }
@@ -101,7 +131,12 @@ public class ConversationFragment extends Fragment {
                     mProgressBar.setVisibility(View.GONE);
                 }
 
-                mTextView.setVisibility(mConversations.size() > 0 ? View.GONE : View.VISIBLE);
+                if (mConversations.size() > 0) {
+                    mTextView.setVisibility(View.GONE);
+                } else {
+                    mTextView.setText(R.string.no_conversation);
+                    mTextView.setVisibility(View.VISIBLE);
+                }
 
                 mAdapter.notifyDataSetChanged();
             }
@@ -113,6 +148,35 @@ public class ConversationFragment extends Fragment {
         };
 
         mGetConversationsQuery.addValueEventListener(mValueEventListener);
+
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        System.out.println("Connected: " + isConnected);
+
+        if (!isConnected) {
+            AlertDialog dialog = new AlertDialog.Builder(mContext)
+                    .setTitle(R.string.no_internet)
+                    .setMessage(R.string.alert_no_internet_message)
+                    .setPositiveButton(android.R.string.yes, null)
+                    .create();
+            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    mProgressBar.setVisibility(View.GONE);
+                    mTextView.setText(R.string.no_internet);
+                    mTextView.setVisibility(View.VISIBLE);
+                }
+            });
+            dialog.show();
+
+            IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+            mContext.registerReceiver(mInternetReceiver, filter);
+        }
+
     }
 
     @Override
@@ -121,11 +185,11 @@ public class ConversationFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_conversation_list, container, false);
 
         mProgressBar = view.findViewById(R.id.progressConversation);
-        mTextView = view.findViewById(R.id.textNoConversation);
+        mTextView = view.findViewById(R.id.textSomethingMissing);
 
         // Set the adapter
         RecyclerView recyclerView = view.findViewById(R.id.conversationList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mAdapter = new ConversationRecyclerViewAdapter(mConversations, mListener);
         recyclerView.setAdapter(mAdapter);
         return view;
@@ -141,7 +205,7 @@ public class ConversationFragment extends Fragment {
                 @Override
                 public void onListFragmentInteraction(final Conversation conversation, int eventType) {
                     if (eventType == EVENT_ON_CLICK) {
-                        Intent intent = new Intent(getContext(), MessageActivity.class);
+                        Intent intent = new Intent(mContext, MessageActivity.class);
                         intent.putExtra(MessageActivity.EXTRA_CONVERSATION_ID, conversation.getKey());
                         intent.putExtra(MessageActivity.EXTRA_CONTACT_ID, conversation.getContact().getId());
                         startActivity(intent);
@@ -178,7 +242,13 @@ public class ConversationFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         mGetConversationsQuery.removeEventListener(mValueEventListener);
+        try {
+            mContext.unregisterReceiver(mInternetReceiver);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Receiver already unregistered", e);
+        }
     }
 
     /**

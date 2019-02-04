@@ -20,6 +20,8 @@
     <string name="no_conversation">No conversation yet.</string>
     <string name="alert_delete_conversation_title">Delete Conversation</string>
     <string name="alert_delete_conversation_message">Do you really want to delete this conversation ?</string>
+    <string name="alert_no_internet_message">Please provide an Internet connection in order for the app to work.</string>
+    <string name="no_internet">No Internet connection</string>
 
     <!-- Contact Fragment -->
     <string name="menu_contact_send_message">Send a message</string>

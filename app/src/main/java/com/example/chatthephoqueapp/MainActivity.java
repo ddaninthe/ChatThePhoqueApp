@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             checkPhoneNeeded();
         }
-
     }
 
     @Override
@@ -199,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        private SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
