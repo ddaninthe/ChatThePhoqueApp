@@ -37,16 +37,21 @@
     <!-- Strings related to Settings -->
     <!-- Setting for Messages -->
     <string name="pref_header_messages">Messages</string>
+    <string name="pref_received_color_key">pref_received_color_key</string>
+    <string name="pref_message_received_color">Color received messages</string>
+    <string name="pref_default_received_color">#39B323</string>
+
+    <string name="pref_sent_color_key">pref_sent_color_key</string>
+    <string name="pref_message_sent_color">Color sent messages</string>
+    <string name="pref_default_sent_color">#E0CAB8</string>
 
     <!-- Settings for Notifications -->
     <string name="pref_header_notifications">Notifications</string>
 
-    <string name="pref_title_new_message_notifications">New message notifications</string>
+    <string name="pref_title_new_message_notifications">New message</string>
 
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
 
-    <string name="pref_title_vibrate">Vibrate</string>
+    <!-- AppWidget -->
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
 </resources>

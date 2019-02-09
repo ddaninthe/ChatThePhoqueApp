@@ -1,5 +1,7 @@
 package com.example.chatthephoqueapp;
 
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -110,10 +112,15 @@ public class MessageFragment extends Fragment {
 
         mProgressBar = view.findViewById(R.id.progressMessage);
 
+        // Get message colors
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        int colorSent = prefs.getInt(getString(R.string.pref_sent_color_key), Color.parseColor(getString(R.string.pref_default_sent_color)));
+        int colorReceived = prefs.getInt(getString(R.string.pref_received_color_key), Color.parseColor(getString(R.string.pref_default_received_color)));
+
         // Set the adapter
         mRecyclerView = view.findViewById(R.id.messageList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new MessageRecyclerViewAdapter(mMessages);
+        mAdapter = new MessageRecyclerViewAdapter(mMessages, colorSent, colorReceived);
         mRecyclerView.setAdapter(mAdapter);
         return view;
     }

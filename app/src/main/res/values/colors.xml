@@ -4,6 +4,4 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="black">#000000</color>
-    <color name="background_message_received">#39B323</color>
-    <color name="background_message_send">#E0CAB8</color>
 </resources>

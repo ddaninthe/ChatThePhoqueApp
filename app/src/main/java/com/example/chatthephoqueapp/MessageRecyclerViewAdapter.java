@@ -1,5 +1,6 @@
 package com.example.chatthephoqueapp;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,9 +15,12 @@ import java.util.List;
 public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecyclerViewAdapter.ViewHolder> {
 
     private final List<Message> mValues;
+    private final int sentColor, receivedColor;
 
-    MessageRecyclerViewAdapter(List<Message> items) {
+    MessageRecyclerViewAdapter(List<Message> items, int colorSent, int colorReceived) {
         mValues = items;
+        sentColor = colorSent;
+        receivedColor = colorReceived;
     }
 
     @NonNull
@@ -24,6 +28,7 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_message_item, parent, false);
+
         return new ViewHolder(view);
     }
 
@@ -33,12 +38,13 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
         holder.mContent.setText(message.getContent());
         holder.mHour.setText(message.getHour());
 
+
         if (message.isReceived()) {
             holder.mViewRight.setVisibility(View.INVISIBLE);
-            holder.mContent.setBackgroundColor(holder.mView.getResources().getColor(R.color.background_message_received));
+            holder.mContent.setBackgroundColor(receivedColor);
         } else {
             holder.mViewLeft.setVisibility(View.INVISIBLE);
-            holder.mContent.setBackgroundColor(holder.mView.getResources().getColor(R.color.background_message_send));
+            holder.mContent.setBackgroundColor(sentColor);
         }
     }
 
