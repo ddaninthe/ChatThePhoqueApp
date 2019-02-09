@@ -30,6 +30,8 @@ public class MessageFragment extends Fragment {
 
     private ArrayList<Message> mMessages;
     private ProgressBar mProgressBar;
+    private RecyclerView mRecyclerView;
+
     private Query mGetMessagesQuery;
     private MessageRecyclerViewAdapter mAdapter;
     private ValueEventListener mValueEventListener;
@@ -65,7 +67,7 @@ public class MessageFragment extends Fragment {
         mMessages = new ArrayList<>();
 
         // Query
-        mGetMessagesQuery = databaseReference.child(Message.DB_REF).orderByChild("conversationId").equalTo(conversationId);
+        mGetMessagesQuery = databaseReference.child(Message.DB_REF).orderByChild("conversationKey").equalTo(conversationId);
 
         // Add listener
         mValueEventListener = new ValueEventListener() {
@@ -73,10 +75,13 @@ public class MessageFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
                     String key = messageSnapshot.getKey();
-                    Message message = messageSnapshot.getValue(Message.class);
-                    message.setKey(key);
+                    assert key != null;
+                    if (!contains(key, mMessages)) { // Avoid duplicates
+                        Message message = messageSnapshot.getValue(Message.class);
+                        message.setKey(key);
 
-                    mMessages.add(message);
+                        mMessages.add(message);
+                    }
                 }
 
                 if (mProgressBar != null) {
@@ -84,6 +89,9 @@ public class MessageFragment extends Fragment {
                 }
 
                 mAdapter.notifyDataSetChanged();
+                if (mMessages.size() > 0) {
+                    mRecyclerView.smoothScrollToPosition(mMessages.size() - 1);
+                }
             }
 
             @Override
@@ -103,11 +111,26 @@ public class MessageFragment extends Fragment {
         mProgressBar = view.findViewById(R.id.progressMessage);
 
         // Set the adapter
-        RecyclerView recyclerView = view.findViewById(R.id.messageList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView = view.findViewById(R.id.messageList);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new MessageRecyclerViewAdapter(mMessages);
-        recyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
         return view;
+    }
+
+    /**
+     * Returns true if a Message is already in an ArrayList
+     * @param key  The Message key to check
+     * @param messages  The List to iterate
+     * @return  {@code true} if a Message in the messages has the key parameter, {@code false} otherwise.
+     */
+    private static boolean contains(@NonNull String key, ArrayList<Message> messages) {
+        for (Message m : messages) {
+            if (key.equals(m.getKey())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

@@ -3,11 +3,26 @@ package com.example.chatthephoqueapp;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+import com.example.chatthephoqueapp.models.Conversation;
+import com.example.chatthephoqueapp.models.Message;
+import com.example.chatthephoqueapp.models.ObjectDb;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Date;
 
 public class MessageActivity extends AppCompatActivity {
     static final String EXTRA_CONVERSATION_ID = "intent.extra.CONVERSATION_ID";
@@ -31,11 +46,12 @@ public class MessageActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
-        String conversationId = intent.getStringExtra(EXTRA_CONVERSATION_ID);
+        final String conversationId = intent.getStringExtra(EXTRA_CONVERSATION_ID);
         int contactId = intent.getIntExtra(EXTRA_CONTACT_ID, -1);
 
-        if (conversationId == null || contactId == -1) {
-            finish();
+        String userKey = PreferenceManager.getDefaultSharedPreferences(this).getString(ObjectDb.PREF_USER_PHONE, null);
+        if (userKey == null || conversationId == null || contactId == -1) {
+            throw new IllegalArgumentException("User Phone cannot be null");
         }
 
         // Display contactName as title
@@ -56,6 +72,46 @@ public class MessageActivity extends AppCompatActivity {
                     MessageFragment.newInstance(conversationId), FRAGMENT_TAG)
                     .commit();
         }
+
+        final ImageButton sendButton = findViewById(R.id.btnSend);
+        final EditText editText = findViewById(R.id.editMessage);
+        editText.requestFocus();
+
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userKey);
+
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    sendButton.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String sendingMessage = editText.getText().toString();
+                if (sendingMessage.length() > 0) {
+                    Message message = new Message(conversationId, sendingMessage, new Date(), false);
+                    // TODO: Send via FCM
+
+
+                    // Save to Database
+                    // Add new Message
+                    DatabaseReference newRef = databaseReference.child(Message.DB_REF).push();
+                    newRef.setValue(message);
+
+                    // Update conversation's lastMessage
+                    databaseReference.child(Conversation.DB_REF).child(conversationId).child("lastMessage").setValue(message);
+
+                    // clear EditText
+                    editText.getText().clear();
+                }
+            }
+        });
     }
 
     @Override

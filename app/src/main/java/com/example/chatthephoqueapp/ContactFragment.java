@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.chatthephoqueapp.models.Contact;
+import com.example.chatthephoqueapp.models.Conversation;
+import com.example.chatthephoqueapp.models.ObjectDb;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,7 +41,7 @@ public class ContactFragment extends Fragment {
     private ArrayList<Contact> mContacts;
     private OnListFragmentInteractionListener mListener;
     private RecyclerView mRecyclerView;
-    private int mContactIDClicked;
+    private Contact mContactClicked;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -105,14 +110,26 @@ public class ContactFragment extends Fragment {
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_contact_send_message:
-                // Todo send message
+                String userKey = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(ObjectDb.PREF_USER_PHONE, null);
+                assert userKey != null;
+                // Add Conversation to Database
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference(userKey);
+                DatabaseReference newConversation = ref.child(Conversation.DB_REF).push();
+                Conversation conversation = new Conversation(newConversation.getKey(),
+                        null, mContactClicked.getId(), mContactClicked.getName());
+                newConversation.setValue(conversation);
 
+                // Launch MessageActivity
+                Intent messageIntent = new Intent(getContext(), MessageActivity.class);
+                messageIntent.putExtra(MessageActivity.EXTRA_CONVERSATION_ID, newConversation.getKey());
+                messageIntent.putExtra(MessageActivity.EXTRA_CONTACT_ID, mContactClicked.getId());
+                startActivity(messageIntent);
                 return true;
             case R.id.menu_contact_show:
 
                 Intent intent = new Intent(Intent.ACTION_VIEW,
                         Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,
-                                Integer.toString(mContactIDClicked)));
+                                Integer.toString(mContactClicked.getId())));
                 startActivity(intent);
                 return true;
             default:
@@ -145,7 +162,7 @@ public class ContactFragment extends Fragment {
                 @Override
                 public void onListFragmentInteraction(View view, Contact contact) {
                     mRecyclerView.showContextMenuForChild(view);
-                    mContactIDClicked = contact.getId();
+                    mContactClicked = contact;
                 }
             };
         }
