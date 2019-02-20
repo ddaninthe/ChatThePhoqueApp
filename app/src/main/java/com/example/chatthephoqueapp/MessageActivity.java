@@ -21,6 +21,8 @@ import com.example.chatthephoqueapp.models.Message;
 import com.example.chatthephoqueapp.models.ObjectDb;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Date;
 
@@ -36,6 +38,8 @@ public class MessageActivity extends AppCompatActivity {
 
     private static final String SELECTION =  ContactsContract.Contacts._ID + " = ?";
 
+    private static  String userKey = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +53,7 @@ public class MessageActivity extends AppCompatActivity {
         final String conversationId = intent.getStringExtra(EXTRA_CONVERSATION_ID);
         int contactId = intent.getIntExtra(EXTRA_CONTACT_ID, -1);
 
-        String userKey = PreferenceManager.getDefaultSharedPreferences(this).getString(ObjectDb.PREF_USER_PHONE, null);
+        userKey = PreferenceManager.getDefaultSharedPreferences(this).getString(ObjectDb.PREF_USER_PHONE, null);
         if (userKey == null || conversationId == null || contactId == -1) {
             throw new IllegalArgumentException("User Phone cannot be null");
         }
@@ -96,8 +100,10 @@ public class MessageActivity extends AppCompatActivity {
                 String sendingMessage = editText.getText().toString();
                 if (sendingMessage.length() > 0) {
                     Message message = new Message(conversationId, sendingMessage, new Date(), false);
-                    // TODO: Send via FCM
-
+                    FirebaseMessaging fm = FirebaseMessaging.getInstance();
+                    fm.send(new RemoteMessage.Builder(userKey + "@gcm.googleapis.com")
+                            .addData("message", sendingMessage)
+                            .build());
 
                     // Save to Database
                     // Add new Message
