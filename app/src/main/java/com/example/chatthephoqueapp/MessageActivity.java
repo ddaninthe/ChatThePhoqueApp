@@ -115,6 +115,13 @@ public class MessageActivity extends AppCompatActivity {
 
                     // clear EditText
                     editText.getText().clear();
+
+                    //Send Notification
+                    newRef
+                            .child("notifications")
+                            .child("messages")
+                            .push()
+                            .setValue(message);
                 }
             }
         });

@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "382785754866-imajvj65b2lcq1ci4q0b7jndc1il0cr4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chatthephoqueapp",
+            "certificate_hash": "ef9b813aa997ef8fdf82a4d75df8f189d6f8e90e"
+          }
+        },
+        {
           "client_id": "382785754866-92t5om7qvq6kph7bf8017ru9e931smd6.apps.googleusercontent.com",
           "client_type": 3
         }
