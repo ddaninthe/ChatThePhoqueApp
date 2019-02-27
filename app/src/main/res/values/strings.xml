@@ -52,6 +52,6 @@
 
 
     <!-- AppWidget -->
-    <string name="appwidget_text">EXAMPLE</string>
+    <string name="appwidget_text">PAS DE NOUVEAU MESSAGE</string>
     <string name="add_widget">Add widget</string>
 </resources>

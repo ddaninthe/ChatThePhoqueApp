@@ -5,6 +5,8 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.widget.RemoteViews;
 
+import com.example.chatthephoqueapp.models.Conversation;
+
 /**
  * Implementation of App Widget functionality.
  */
@@ -14,6 +16,11 @@ public class MessageAppWidget extends AppWidgetProvider {
                                 int appWidgetId) {
 
         CharSequence widgetText = context.getString(R.string.appwidget_text);
+        CharSequence lastMessage = Conversation.lastMessage.getContent();
+        if(lastMessage != null)
+        {
+            widgetText = lastMessage;
+        }
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.message_app_widget);
         views.setTextViewText(R.id.appwidget_text, widgetText);

@@ -18,7 +18,7 @@ public class Conversation implements ObjectDb {
     private String key;
 
     private Contact contact;
-    private Message lastMessage;
+    public static Message lastMessage;
 
 
     // Firebase need

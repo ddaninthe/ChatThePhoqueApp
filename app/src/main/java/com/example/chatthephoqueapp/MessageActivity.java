@@ -102,7 +102,7 @@ public class MessageActivity extends AppCompatActivity {
                     Message message = new Message(conversationId, sendingMessage, new Date(), false);
                     FirebaseMessaging fm = FirebaseMessaging.getInstance();
                     fm.send(new RemoteMessage.Builder(userKey + "@gcm.googleapis.com")
-                            .addData("message", sendingMessage)
+                            .addData("my_message", sendingMessage)
                             .build());
 
                     // Save to Database
